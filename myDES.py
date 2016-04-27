@@ -6,6 +6,8 @@ from Crypto.Cipher import DES
 class myDES(cipherInterface.CipherInterface):
 
     final_key = ""
+    plaintext = ""
+    ciphertext = ""
 
     def __init__(self):
         print("you are in DES!")
@@ -31,11 +33,12 @@ class myDES(cipherInterface.CipherInterface):
 
             sys.exit()
 
-        print("Length is " + str(len(self.final_key)))
 
         des = DES.new(self.final_key, DES.MODE_ECB)
 
-        return des.encrypt(plainText)
+        self.ciphertext = des.encrypt(plainText)
+
+        return self.ciphertext
 
     def decrypt(self, cipherText):
 
@@ -47,7 +50,9 @@ class myDES(cipherInterface.CipherInterface):
 
         des = DES.new(self.final_key, DES.MODE_ECB)
 
-        return des.decrypt(cipherText)
+        self.plaintext = des.decrypt(cipherText)
+
+        return self.plaintext
 
 
 

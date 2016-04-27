@@ -6,17 +6,7 @@ ciphers = { 'DES' : 'Data Encryption Standard'}
 
 activities = {'ENC', 'DEC'}
 
-cipher = myDES()
-
-cipher.setKey("1234567890abcdef")
-
-ciphertext = cipher.encrypt("vandanpr")
-
-print(ciphertext)
-
-plaintext = cipher.decrypt(ciphertext)
-
-print(plaintext)
+outputText = ""
 
 if len(sys.argv) < 6:
 
@@ -45,25 +35,69 @@ else:
         for key, value in ciphers.items():
             print(key, value)
 
+    if not (activity in activities):
+        print("Valid activities are : ")
+        for activity in activities:
+            print(activity)
+
     elif activity == "ENC":
 
         if cipherName == 'DES':
 
             cipher = myDES()
             cipher.setKey(cipherKey)
+
             text = fileReader.read()
-            cipherText = cipher.encrypt(text)
-            fileWriter.write(cipherText)
-            fileReader.close()
-            fileWriter.close()
+            length = len(text)
+
+            if length == 0:
+                print("Your input file cannot be empty.")
+                exit(1)
+
+            elif length % 8 != 0:
+                print("One of your plaintext blocks appears to have block size less than 8 byes. ALL BLOCKS HAVE TO BE 8 BYTES EXACTLY.")
+                exit(1)
+
+            else:
+
+                with open(inputFile, 'r') as f:
+                    while True:
+                        block = f.read(8)
+                        if not block:
+                            print "End of File"
+                            break
+                        outputText += cipher.encrypt(block)
+
+                fileWriter.write(outputText)
+                fileReader.close()
+                fileWriter.close()
 
     elif activity == "DEC":
 
         if cipherName == 'DES':
             cipher = myDES()
             cipher.setKey(cipherKey)
+
             text = fileReader.read()
-            plainText = cipher.encrypt(text)
-            fileWriter.write(plainText)
-            fileReader.close()
-            fileWriter.close()
+            length = len(text)
+
+            if length == 0:
+                print("Your input file cannot be empty.")
+                exit(1)
+
+            elif length % 8 != 0:
+                print("One of your plaintext blocks appears to have block size less than 8 byes. ALL BLOCKS HAVE TO BE 8 BYTES EXACTLY.")
+                exit(1)
+
+            else:
+                with open(inputFile, 'r') as f:
+                    while True:
+                        block = f.read(8)
+                        if not block:
+                            print "End of File"
+                            break
+                        outputText += cipher.decrypt(block)
+
+                fileWriter.write(outputText)
+                fileReader.close()
+                fileWriter.close()
