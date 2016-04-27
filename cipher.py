@@ -68,9 +68,7 @@ else:
                             break
                         outputText += cipher.encrypt(block)
 
-                fileWriter.write(outputText)
-                fileReader.close()
-                fileWriter.close()
+            fileWriter.write(outputText)
 
     elif activity == "DEC":
 
@@ -98,6 +96,7 @@ else:
                             break
                         outputText += cipher.decrypt(block)
 
-                fileWriter.write(outputText)
-                fileReader.close()
-                fileWriter.close()
+            fileWriter.write(outputText)
+
+    fileReader.close()
+    fileWriter.close()
