@@ -27,6 +27,8 @@ class myDES(cipherInterface.CipherInterface):
 
     def encrypt(self, plainText):
 
+        print("Encrypting...")
+
         if len(plainText) != 8:
 
             print("block has to be exactly 8 characters")
@@ -41,6 +43,8 @@ class myDES(cipherInterface.CipherInterface):
         return self.ciphertext
 
     def decrypt(self, cipherText):
+
+        print("Decrypting...")
 
         if len(cipherText) != 8:
 

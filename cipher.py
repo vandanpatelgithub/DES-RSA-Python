@@ -64,7 +64,6 @@ else:
                     while True:
                         block = f.read(8)
                         if not block:
-                            print "End of File"
                             break
                         outputText += cipher.encrypt(block)
 
@@ -92,7 +91,6 @@ else:
                     while True:
                         block = f.read(8)
                         if not block:
-                            print "End of File"
                             break
                         outputText += cipher.decrypt(block)
 
