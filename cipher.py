@@ -1,12 +1,18 @@
 import sys
 from myDES import myDES
+from myRSA import myRSA
 
-
-ciphers = { 'DES' : 'Data Encryption Standard'}
+ciphers = { 'DES' : 'Data Encryption Standard', 'RSA' : 'Rivest, Shamir, & Adleman'}
 
 activities = {'ENC', 'DEC'}
 
 outputText = ""
+
+# The plaintext block
+PLAIN_TEXT_BLOCK_SIZE = 214
+
+# The ciphertext block
+CIPHER_TEXT_BLOCK_SIZE = 256
 
 if len(sys.argv) < 6:
 
@@ -69,6 +75,30 @@ else:
 
             fileWriter.write(outputText)
 
+        elif cipherName == 'RSA':
+
+            cipher = myRSA()
+
+            cipher.setKey(cipherKey)
+
+            text = fileReader.read()
+            length = len(text)
+
+            if length == 0:
+                print("Your input file cannot be empty")
+                exit(1)
+
+            else:
+
+                with open(inputFile, 'r') as f:
+                    while True:
+                        block = f.read(PLAIN_TEXT_BLOCK_SIZE)
+                        if not block:
+                            break
+                        outputText += cipher.encrypt(block)
+
+            fileWriter.write(outputText)
+
     elif activity == "DEC":
 
         if cipherName == 'DES':
@@ -90,6 +120,30 @@ else:
                 with open(inputFile, 'r') as f:
                     while True:
                         block = f.read(8)
+                        if not block:
+                            break
+                        outputText += cipher.decrypt(block)
+
+            fileWriter.write(outputText)
+
+        elif cipherName == 'RSA':
+
+            cipher = myRSA()
+
+            cipher.setKey(cipherKey)
+
+            text = fileReader.read()
+            length = len(text)
+
+            if length == 0:
+                print("Your input file cannot be empty")
+                exit(1)
+
+            else:
+
+                with open(inputFile, 'r') as f:
+                    while True:
+                        block = f.read(CIPHER_TEXT_BLOCK_SIZE)
                         if not block:
                             break
                         outputText += cipher.decrypt(block)

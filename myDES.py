@@ -27,7 +27,7 @@ class myDES(cipherInterface.CipherInterface):
 
     def encrypt(self, plainText):
 
-        print("Encrypting...")
+        print("Encrypting DES ...")
 
         if len(plainText) != 8:
 
@@ -44,7 +44,7 @@ class myDES(cipherInterface.CipherInterface):
 
     def decrypt(self, cipherText):
 
-        print("Decrypting...")
+        print("Decrypting DES...")
 
         if len(cipherText) != 8:
 
