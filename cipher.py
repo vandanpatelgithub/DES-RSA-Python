@@ -2,11 +2,13 @@ import sys
 from myDES import myDES
 from myRSA import myRSA
 
-ciphers = { 'DES' : 'Data Encryption Standard', 'RSA' : 'Rivest, Shamir, & Adleman'}
+ciphers = { 'DES' : 'Data Encryption Standard', 'RSA' : 'Rivest, Shamir, & Adleman', 'CBC' : 'Cipher Block Chaining'}
 
 activities = {'ENC', 'DEC'}
 
 outputText = ""
+cipherArray = []
+cipherDESArray = []
 
 # The plaintext block
 PLAIN_TEXT_BLOCK_SIZE = 214
@@ -53,27 +55,16 @@ else:
             cipher = myDES()
             cipher.setKey(cipherKey)
 
-            text = fileReader.read()
-            length = len(text)
+            with open(inputFile, 'r') as f:
+                while True:
+                    block = f.read(8)
+                    if not block:
+                        break
 
-            if length == 0:
-                print("Your input file cannot be empty.")
-                exit(1)
+                    while len(block) < 8:
+                        block += "0"
 
-            elif length % 8 != 0:
-                print("One of your plaintext blocks appears to have block size less than 8 byes. ALL BLOCKS HAVE TO BE 8 BYTES EXACTLY.")
-                exit(1)
-
-            else:
-
-                with open(inputFile, 'r') as f:
-                    while True:
-                        block = f.read(8)
-                        if not block:
-                            break
-                        outputText += cipher.encrypt(block)
-
-            fileWriter.write(outputText)
+                    fileWriter.write(cipher.encrypt(block))
 
         elif cipherName == 'RSA':
 
@@ -81,50 +72,90 @@ else:
 
             cipher.setKey(cipherKey)
 
-            text = fileReader.read()
-            length = len(text)
+            with open(inputFile, 'r') as f:
+                while True:
+                    block = f.read(PLAIN_TEXT_BLOCK_SIZE)
+                    if not block:
+                        break
+                    fileWriter.write(cipher.encrypt(block))
 
-            if length == 0:
-                print("Your input file cannot be empty")
-                exit(1)
+        elif cipherName == "CBC":
+
+            cipher = myDES()
+
+            IV = raw_input("Please enter Initialization Vector : ")
+
+            if len(IV) == 0:
+                print("Initialization Vector cannot be empty!")
+
+            elif len(IV) != 16:
+                print("Initialization Vector has to be 16 charactes (8 bytes)")
 
             else:
 
+                iv_to_list = cipher.iv_to_int(IV)
+
+                counter = 0
+
+                cipher.setKey(cipherKey)
+
                 with open(inputFile, 'r') as f:
                     while True:
-                        block = f.read(PLAIN_TEXT_BLOCK_SIZE)
+                        block = f.read(8)
                         if not block:
                             break
-                        outputText += cipher.encrypt(block)
 
-            fileWriter.write(outputText)
+                        while len(block) < 8:
+                            block += "0"
+
+                        if counter == 0:
+
+                            block_to_list = cipher.block_to_int(block)
+
+                            char_list = cipher.xor_list(iv_to_list, block_to_list)
+
+                            print("Encrypting in CBC Mode ...")
+
+                            cipherText = cipher.encrypt(''.join(char_list))
+
+                            cipherArray.append(cipherText)
+
+                            counter += 1
+
+                            fileWriter.write(cipherText)
+
+                        else:
+
+
+                            ciphertext_list = cipher.block_to_int(cipherText)
+
+                            plaintext_list = cipher.block_to_int(block)
+
+                            char_list = cipher.xor_list(ciphertext_list, plaintext_list)
+
+                            print("Encrypting in CBC Mode ...")
+
+                            cipherText = cipher.encrypt(''.join(char_list))
+
+                            cipherArray.append(cipherText)
+
+                            fileWriter.write(cipherText)
+
 
     elif activity == "DEC":
 
         if cipherName == 'DES':
+
             cipher = myDES()
             cipher.setKey(cipherKey)
 
-            text = fileReader.read()
-            length = len(text)
+            with open(inputFile, 'r') as f:
+                while True:
+                    block = f.read(8)
+                    if not block:
+                        break
 
-            if length == 0:
-                print("Your input file cannot be empty.")
-                exit(1)
-
-            elif length % 8 != 0:
-                print("One of your plaintext blocks appears to have block size less than 8 byes. ALL BLOCKS HAVE TO BE 8 BYTES EXACTLY.")
-                exit(1)
-
-            else:
-                with open(inputFile, 'r') as f:
-                    while True:
-                        block = f.read(8)
-                        if not block:
-                            break
-                        outputText += cipher.decrypt(block)
-
-            fileWriter.write(outputText)
+                    fileWriter.write(cipher.decrypt(block))
 
         elif cipherName == 'RSA':
 
@@ -132,23 +163,79 @@ else:
 
             cipher.setKey(cipherKey)
 
-            text = fileReader.read()
-            length = len(text)
+            with open(inputFile, 'r') as f:
+                while True:
+                    block = f.read(CIPHER_TEXT_BLOCK_SIZE)
+                    if not block:
+                        break
+                    fileWriter.write(cipher.decrypt(block))
 
-            if length == 0:
-                print("Your input file cannot be empty")
-                exit(1)
+        elif cipherName == "CBC":
+
+            cipher = myDES()
+
+            IV = raw_input("Please enter Initialization Vector : ")
+
+            if len(IV) == 0:
+                print("Initialization Vector cannot be empty!")
+
+            elif len(IV) != 16:
+                print("Initialization Vector has to be 16 charactes (8 bytes)")
 
             else:
 
+                iv_to_list = cipher.iv_to_int(IV)
+
+                counter = 0
+
+                cipher.setKey(cipherKey)
+
                 with open(inputFile, 'r') as f:
+
                     while True:
-                        block = f.read(CIPHER_TEXT_BLOCK_SIZE)
+                        block = f.read(8)
                         if not block:
                             break
-                        outputText += cipher.decrypt(block)
 
-            fileWriter.write(outputText)
+                        while len(block) < 8:
+                            block += "0"
+
+                        if counter == 0:
+
+                            previous_block = block
+
+                            print("Decrypting in CBC Mode ...")
+
+                            decryptedText = cipher.decrypt(block)
+
+                            decryptedtext_to_list = cipher.block_to_int(decryptedText)
+
+                            char_list = cipher.xor_list(decryptedtext_to_list, iv_to_list)
+
+                            plaintext = ''.join(char_list)
+
+                            counter += 1
+
+                            fileWriter.write(plaintext)
+
+                        else:
+
+                            print("Decrypting in CBC Mode ...")
+
+                            decryptedText = cipher.decrypt(block)
+
+                            decryptedtext_to_list = cipher.block_to_int(decryptedText)
+
+                            previous_block_to_list = cipher.block_to_int(previous_block)
+
+                            char_list = cipher.xor_list(decryptedtext_to_list, previous_block_to_list)
+
+                            plaintext = ''.join(char_list)
+
+                            previous_block = block
+
+                            fileWriter.write(plaintext)
+
 
     fileReader.close()
     fileWriter.close()

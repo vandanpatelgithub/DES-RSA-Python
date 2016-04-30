@@ -9,6 +9,7 @@ class myDES(cipherInterface.CipherInterface):
     plaintext = ""
     ciphertext = ""
 
+
     def __init__(self):
         print("you are in DES!")
 
@@ -27,20 +28,21 @@ class myDES(cipherInterface.CipherInterface):
 
     def encrypt(self, plainText):
 
-        print("Encrypting DES ...")
+            print("Encrypting DES...")
 
-        if len(plainText) != 8:
+            if len(plainText) != 8:
 
-            print("block has to be exactly 8 characters")
+                print("block has to be exactly 8 characters")
 
-            sys.exit()
+                sys.exit()
 
 
-        des = DES.new(self.final_key, DES.MODE_ECB)
+            des = DES.new(self.final_key, DES.MODE_ECB)
 
-        self.ciphertext = des.encrypt(plainText)
+            self.ciphertext = des.encrypt(plainText)
 
-        return self.ciphertext
+            return self.ciphertext
+
 
     def decrypt(self, cipherText):
 
@@ -57,6 +59,33 @@ class myDES(cipherInterface.CipherInterface):
         self.plaintext = des.decrypt(cipherText)
 
         return self.plaintext
+
+    def iv_to_int(self, IV):
+
+        iv_list = []
+
+        for (char1, char2) in zip(IV[0::2], IV[1::2]):
+
+            iv_list.append(int(char1+char2,16))
+
+        return iv_list
+
+    def block_to_int(self, block):
+
+        block_list = []
+
+        for char in block:
+
+            block_list.append(ord(char))
+
+        return block_list
+
+    def xor_list(self, list1, list2):
+
+        return [chr(a^b) for a,b in zip(list1, list2)]
+
+
+
 
 
 

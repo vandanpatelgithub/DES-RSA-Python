@@ -27,7 +27,7 @@ class myRSA(cipherInterface.CipherInterface):
 
     def encrypt(self, plainText):
 
-        print("Encryptin RSA ...")
+        print("Encrypting RSA ...")
 
         self.cipherText = self.rsaKey.encrypt(plainText)
 
@@ -35,7 +35,7 @@ class myRSA(cipherInterface.CipherInterface):
 
     def decrypt(self, cipherText):
 
-        print("Decryptin RSA ...")
+        print("Decrypting RSA ...")
 
         self.plainText = self.rsaKey.decrypt(cipherText)
 
